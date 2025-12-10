@@ -119,6 +119,14 @@ namespace GoMartApplication
             }
         }
 
+       // private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        //{
+         //   if (DialogResult.Yes == MessageBox.Show("Do you really want to close this Application ?", "CLOSE", MessageBoxButtons.YesNo, MessageBoxIcon.Stop))
+            //{
+           //     Application.Exit();
+          //  }
+        //}
+
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (DialogResult.Yes == MessageBox.Show("Do you really want to close this Application ?", "CLOSE", MessageBoxButtons.YesNo, MessageBoxIcon.Stop))
