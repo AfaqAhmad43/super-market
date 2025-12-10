@@ -320,3 +320,70 @@ select
     as ConnectionString
 from sys.server_principals
 where name = suser_name()
+
+-- changing the admin store procedure through adding checks
+alter procedure spAddAdmin
+    @AdminID nvarchar(50),
+    @Password nvarchar(50),
+    @FullName nvarchar(50)
+as
+begin
+
+
+    -- Admin ID Validation
+    if @AdminID is null
+    begin
+        raiserror('Admin ID cannot be empty', 16, 1);
+        return;
+    end
+
+    if LEN(@AdminID) > 50
+    begin
+        raiserror('Admin ID cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    if exists(select 1 from tblAdmin where AdminID=@AdminID)
+    begin
+        raiserror('AdminID aleady exists', 16, 1);
+        return;
+    end
+
+    -- Password validation
+    if @Password is null
+    begin
+        raiserror('Password cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@Password) > 50
+    begin
+        raiserror('Password cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    -- FullName validation
+    if @FullName is null
+    begin
+        raiserror('Full name cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@FullName) > 50
+    begin
+        raiserror('Full name cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        insert into tblAdmin(AdminID, [Password], FullName)
+        values(@AdminID, @Password, @FullName);
+
+        commit transaction;
+    end try
+    begin catch
+        rollback transaction;
+    end catch
+end
+go
