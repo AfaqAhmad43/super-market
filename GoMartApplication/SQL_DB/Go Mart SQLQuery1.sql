@@ -442,3 +442,41 @@ go
     end catch
 end
 go
+
+-- checks for deleting admin, updating spDeleteAdmin
+alter procedure spDeleteAdmin
+    @AdminID nvarchar(50)
+as
+begin
+    
+    begin transaction
+    begin try
+
+        if @AdminID is null
+        begin
+            raiserror('Admin ID cannot be empty.', 16, 1);
+            rollback transaction;
+            return;
+        end
+
+        if not exists(select 1 from tblAdmin where AdminID=@AdminID)
+        begin
+            raiserror('Admin ID does not exist', 16, 1);
+            rollback transaction;
+            return;
+        end
+
+        
+   
+
+        delete from tblAdmin where AdminID = @AdminID
+
+        commit transaction
+    end try
+    begin catch
+        rollback transaction
+
+        throw
+    end catch
+end;
+go

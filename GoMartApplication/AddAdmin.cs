@@ -30,6 +30,7 @@ namespace GoMartApplication
                 }
                 else
                 {
+
                     SqlCommand cmd = new SqlCommand("select AdminID from tblAdmin where AdminID=@ID", dbCon.GetCon());
                     cmd.Parameters.AddWithValue("@ID", txtAdminID.Text);
                     dbCon.OpenCon();
