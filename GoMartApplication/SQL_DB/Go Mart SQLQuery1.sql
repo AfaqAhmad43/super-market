@@ -480,3 +480,146 @@ begin
     end catch
 end;
 go
+
+
+-- Changes to category table
+
+-- Made CategoryName not null
+alter table tblCategory
+alter column CategoryName nvarchar(50) not null;
+
+-- Made CategoryName unique through constraint
+alter table tblCategory
+add constraint uniqueCategoryName unique (CategoryName)
+
+-- Checks added to category insert procedure
+alter procedure spCatInsert (
+@CategoryName nvarchar(50),
+@CategoryDesc nvarchar(50)
+)
+as
+begin
+    
+    if @CategoryName is null
+    begin
+        raiserror('CategoryName cannot be null', 16, 1);
+        return;
+    end
+
+    if LEN(@CategoryName) > 50
+    begin
+        raiserror('CategoryName cannot exceed 50 characters', 16, 1);
+        return;
+    end
+
+
+    if @CategoryDesc is null
+    begin
+        raiserror('Category decription cannot be null', 16, 1);
+        return;
+    end
+
+    if LEN(@CategoryDesc) > 50
+    begin
+        raiserror('Category description cannot exceed 50 characters', 16, 1);
+        return;
+    end
+
+    if exists(select 1 from tblCategory where CategoryName = @CategoryName)
+    begin
+        raiserror('Category Name already exists', 16, 1)
+        return;
+    end
+
+    begin transaction
+    begin try
+        insert into tblCategory(CategoryName, CategoryDesc)
+        values(@CategoryName, @CategoryDesc);
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch
+end
+go
+
+-- Changes added to category update procedure
+alter procedure spCatUpdate
+    @CatID int,
+    @CategoryName nvarchar(50),
+    @CategoryDesc nvarchar(50)
+as
+begin
+    
+    if not exists(select 1 from tblCategory where CatID = @CatID)
+    begin
+        raiserror('Category ID does not exist', 16, 1);
+        return;
+    end
+
+    if @CategoryName is null
+    begin
+        raiserror('Category name cannot be empty', 16, 1);
+        return;
+    end
+
+    if LEN(@CategoryName) > 50
+    begin
+        raiserror('Category name cannot exceed 50 characters', 16, 1);
+        return;
+    end
+
+    if @CategoryDesc is null
+    begin
+        raiserror('Category description cannot be empty', 16, 1);
+        return;
+    end
+
+    if LEN(@CategoryDesc) > 50
+    begin
+        raiserror('Category description cannot exceed 50 characters', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        update tblCategory
+        set CategoryName = @CategoryName,
+            CategoryDesc = @CategoryDesc
+        where CatID = @CatID;
+
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch
+end
+go
+
+-- changes to the category delete procedure
+alter procedure spCatDelete
+    @CatID int
+as
+begin
+    if not exists(select 1 from tblCategory where CatID = @CatID)
+    begin
+        raiserror('Category ID does not exist.', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        delete from tblCategory where CatID = @CatID;
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch;
+end
+go
