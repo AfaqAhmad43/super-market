@@ -48,10 +48,7 @@ namespace GoMartApplication
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (DialogResult.Yes == MessageBox.Show("Do you really want to close this Application ?", "CLOSE", MessageBoxButtons.YesNo, MessageBoxIcon.Stop))
-            {
-                Application.Exit();
-            }
+            
         }
 
         private void sellerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -63,16 +60,24 @@ namespace GoMartApplication
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes == MessageBox.Show("Do you really want to close this Application ?", "CLOSE", MessageBoxButtons.YesNo, MessageBoxIcon.Stop))
-            {
-                Application.Exit();
-            }
+            this.Close();
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            var result = MessageBox.Show(
+                "Do you really want to close this Application?",
+                "Exit",
+                 MessageBoxButtons.YesNo,
+                 MessageBoxIcon.Question
+                 );
+
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true;
+            }
         }
+
 
         private void adminToolStripMenuItem_Click(object sender, EventArgs e)
         {
