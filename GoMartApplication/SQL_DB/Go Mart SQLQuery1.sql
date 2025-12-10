@@ -1,3 +1,5 @@
+create database GoMartDB
+
 
 create table tblAdmin
 (
@@ -212,7 +214,7 @@ select * from tblCategory
 select * from tblProduct
 
 create procedure spGetAllProductList
-as
+as  
 begin
 set nocount on;
 select t1.ProdID,t1.ProdName,t2.CategoryName,t1.ProdCatID as CategoryID,t1.ProdPrice,t1.ProdQty from tblProduct as t1
@@ -297,3 +299,24 @@ set nocount on;
 select Bill_ID,SellerID,SellDate,TotalAmt from tblBill order by Bill_ID desc 
 end
 go
+
+
+
+
+-- Get Connection string
+-- Source - https://stackoverflow.com/a
+-- Posted by Brijesh Kumar Tripathi
+-- Retrieved 2025-12-09, License - CC BY-SA 4.0
+
+select
+    'data source=' + @@servername +
+    ';initial catalog=' + db_name() +
+    case type_desc
+        when 'WINDOWS_LOGIN' 
+            then ';trusted_connection=true'
+        else
+            ';user id=' + suser_name() + ';password=<<YourPassword>>'
+    end
+    as ConnectionString
+from sys.server_principals
+where name = suser_name()
