@@ -387,3 +387,58 @@ begin
     end catch
 end
 go
+
+    -- Admin ID Validation
+    if @AdminID is null
+    begin
+        raiserror('Admin ID cannot be empty', 16, 1);
+        return;
+    end
+
+    if LEN(@AdminID) > 50
+    begin
+        raiserror('Admin ID cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    -- Password validation
+    if @Password is null
+    begin
+        raiserror('Password cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@Password) > 50
+    begin
+        raiserror('Password cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    -- FullName validation
+    if @FullName is null
+    begin
+        raiserror('Full name cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@FullName) > 50
+    begin
+        raiserror('Full name cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        update tblAdmin
+        set [Password] = @Password,
+            FullName = @FullName
+        where AdminID = @AdminID
+
+        commit transaction;
+    end try
+    begin catch
+        rollback transaction;
+        throw
+    end catch
+end
+go

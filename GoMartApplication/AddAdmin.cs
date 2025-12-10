@@ -30,7 +30,6 @@ namespace GoMartApplication
                 }
                 else
                 {
-                    //check duplicate record
                     SqlCommand cmd = new SqlCommand("select AdminID from tblAdmin where AdminID=@ID", dbCon.GetCon());
                     cmd.Parameters.AddWithValue("@ID", txtAdminID.Text);
                     dbCon.OpenCon();
