@@ -623,3 +623,6 @@ begin
     end catch;
 end
 go
+
+-- added indexing on CategoryName
+create index indexCategoryName on tblCategory(CategoryName);
