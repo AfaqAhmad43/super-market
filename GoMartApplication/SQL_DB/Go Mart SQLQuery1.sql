@@ -442,6 +442,70 @@ go
     end catch
 end
 go
+--Check is for the Updating the Admin 
+alter procedure spUpdateAdmin
+(
+@AdminID nvarchar(50),
+@Password nvarchar(50),
+@FullName nvarchar(50)
+)
+as
+begin
+
+    -- Admin ID Validation
+    if @AdminID is null
+    begin
+        raiserror('Admin ID cannot be empty', 16, 1);
+        return;
+    end
+
+    if LEN(@AdminID) > 50
+    begin
+        raiserror('Admin ID cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    -- Password validation
+    if @Password is null
+    begin
+        raiserror('Password cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@Password) > 50
+    begin
+        raiserror('Password cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    -- FullName validation
+    if @FullName is null
+    begin
+        raiserror('Full name cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@FullName) > 50
+    begin
+        raiserror('Full name cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        update tblAdmin
+        set [Password] = @Password,
+            FullName = @FullName
+        where AdminID = @AdminID
+
+        commit transaction;
+    end try
+    begin catch
+        rollback transaction;
+        throw
+    end catch
+end
+go
 
 -- checks for deleting admin, updating spDeleteAdmin
 alter procedure spDeleteAdmin
@@ -483,8 +547,186 @@ go
 
 
 -- Changes to category table
+-- Checks for the Seller 
+alter procedure spSellerInsert
+@SellerName nvarchar(50),
+@SellerAge int, 
+@SellerPhone nvarchar(50),
+@SellerPass nvarchar(50)
+as begin 
+-- Validation for the Seller Name Same 
+ if @SellerName is null
+    begin
+        raiserror('Seller  Name  cannot be empty', 16, 1);
+        return;
+    end
 
--- Made CategoryName not null
+    if LEN(@SellerName) > 50
+    begin
+        raiserror('SellerName cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+    --Validation for the Seller Age 
+    if @SellerAge  is null
+    begin
+        raiserror('Seller  Age   cannot be empty', 16, 1);
+        return;
+    end
+      
+
+    --Validation for the Seller Phone 
+       if @SellerPhone  is null
+    begin
+        raiserror('Seller Phone Number is Must ', 16, 1);
+        return;
+    end
+       if LEN(@SellerPhone)  >50
+    begin
+        raiserror('Seller  Phone Number Cannot be Greater then the 50 ', 16, 1);
+        return;
+    end
+    -- Validation for the Seller  Password
+
+   if @SellerPass  is null
+    begin
+        raiserror('Seller Password  Cannot be Empty  ', 16, 1);
+        return;
+    end
+       if LEN(@SellerPass)  >50
+    begin
+        raiserror('Seller  PassWord  Cannot be Greater then the 50 ', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        insert into tblSeller(SellerName,SellerAge,SellerPhone,SellerPass) values(@SellerName,@SellerAge,@SellerPhone,@SellerPass)
+        commit transaction
+    end try
+    begin catch
+        rollback transaction
+        throw
+    end catch
+
+end
+-- Checks for the Updating Seller 
+-- Checks for the Updating Seller 
+-- Checks for the Updating Seller 
+go
+
+alter procedure spSellerUpadte
+(
+@SellerID int,
+@SellerName nvarchar(50),
+@SellerAge int, 
+@SellerPhone nvarchar(50),
+@SellerPass nvarchar(50)
+)
+as
+begin
+    
+    if not exists(select 1 from tblSeller where SellerID = @SellerID)
+    begin
+        raiserror('Seller ID does not exist. Cannot update.', 16, 1);
+        return;
+    end
+
+    -- Validation for Seller Name (ADDED)
+    if @SellerName is null
+    begin
+        raiserror('Seller Name cannot be empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@SellerName) > 50
+    begin
+        raiserror('SellerName cannot be more than 50 characters.', 16, 1);
+        return;
+    end
+    
+    -- Validation for Seller Age (ADDED)
+    if @SellerAge is null
+    begin
+        raiserror('Seller Age cannot be empty.', 16, 1);
+        return;
+    end
+    
+    -- Validation for Seller Phone (ADDED)
+    if @SellerPhone is null
+    begin
+        raiserror('Seller Phone Number is Must.', 16, 1);
+        return;
+    end
+
+    if LEN(@SellerPhone) > 50
+    begin
+        raiserror('Seller Phone Number Cannot be Greater than 50.', 16, 1);
+        return;
+    end
+
+    -- Validation for Seller Password (ADDED)
+    if @SellerPass is null
+    begin
+        raiserror('Seller Password Cannot be Empty.', 16, 1);
+        return;
+    end
+
+    if LEN(@SellerPass) > 50
+    begin
+        raiserror('Seller Password Cannot be Greater than 50.', 16, 1);
+        return;
+    end
+
+    -- Transaction Block for Atomicity
+    begin transaction
+    begin try
+        update tblSeller set 
+            SellerName=@SellerName,
+            SellerAge=@SellerAge,
+            SellerPhone=@SellerPhone,
+            SellerPass=@SellerPass 
+        where SellerID=@SellerID
+        
+        commit transaction;
+    end try
+    begin catch
+        rollback transaction;
+        throw
+    end catch
+end
+go
+-----------------------------
+alter procedure spSellerDelete
+(
+@SellerID int 
+)
+as
+begin
+    
+    -- Existence Check (Ensures Seller ID exists before attempting delete)
+    if not exists(select 1 from tblSeller where SellerID = @SellerID)
+    begin
+        raiserror('Seller ID does not exist. Cannot be Deleted.', 16, 1);
+        return;
+    end
+
+    -- Transaction Block for Atomicity
+    begin transaction
+    begin try
+        
+        -- The Core Deletion Command
+        Delete from tblSeller where SellerID=@SellerID
+
+        commit transaction;
+    end try
+    begin catch
+        -- If any error occurs  rollback changes
+        rollback transaction; 
+        throw
+    end catch
+end
+go
+
 alter table tblCategory
 alter column CategoryName nvarchar(50) not null;
 
@@ -493,6 +735,7 @@ alter table tblCategory
 add constraint uniqueCategoryName unique (CategoryName)
 
 -- Checks added to category insert procedure
+go
 alter procedure spCatInsert (
 @CategoryName nvarchar(50),
 @CategoryDesc nvarchar(50)
@@ -546,6 +789,7 @@ end
 go
 
 -- Changes added to category update procedure
+
 alter procedure spCatUpdate
     @CatID int,
     @CategoryName nvarchar(50),
