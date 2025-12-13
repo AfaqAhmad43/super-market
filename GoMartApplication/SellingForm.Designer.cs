@@ -61,6 +61,7 @@
             this.txtBillNo = new System.Windows.Forms.TextBox();
             this.btnSaveBill = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
+            this.cmdCustomer = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1_Order)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -255,7 +256,7 @@
             this.btnAddOrder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddOrder.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddOrder.ForeColor = System.Drawing.Color.White;
-            this.btnAddOrder.Location = new System.Drawing.Point(115, 184);
+            this.btnAddOrder.Location = new System.Drawing.Point(212, 185);
             this.btnAddOrder.Name = "btnAddOrder";
             this.btnAddOrder.Size = new System.Drawing.Size(96, 37);
             this.btnAddOrder.TabIndex = 4;
@@ -423,12 +424,22 @@
             this.label9.TabIndex = 1;
             this.label9.Text = "Bill_Number";
             // 
+            // cmdCustomer
+            // 
+            this.cmdCustomer.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmdCustomer.FormattingEnabled = true;
+            this.cmdCustomer.Location = new System.Drawing.Point(6, 191);
+            this.cmdCustomer.Name = "cmdCustomer";
+            this.cmdCustomer.Size = new System.Drawing.Size(158, 26);
+            this.cmdCustomer.TabIndex = 11;
+            // 
             // SellingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(914, 521);
+            this.Controls.Add(this.cmdCustomer);
             this.Controls.Add(this.btnSaveBill);
             this.Controls.Add(this.txtBillNo);
             this.Controls.Add(this.dataGridView2_Product);
@@ -501,5 +512,6 @@
         private System.Windows.Forms.TextBox txtBillNo;
         private System.Windows.Forms.Button btnSaveBill;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox cmdCustomer;
     }
 }

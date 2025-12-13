@@ -22,6 +22,7 @@ namespace GoMartApplication
             BindCategory();
             lblDate.Text = DateTime.Now.ToShortDateString();
             BindBillList();
+            BindCustomer();
         }
 
         // Bind categories to combo box
@@ -36,6 +37,19 @@ namespace GoMartApplication
             cmbCategory.DataSource = dt;
             cmbCategory.DisplayMember = "CategoryName";
             cmbCategory.ValueMember = "CatID";
+            dbCon.CloseCon();
+        }
+
+        private void BindCustomer()
+        {
+            SqlCommand cmd = new SqlCommand("SELECT CustomerID, CustomerName FROM tblCustomer", dbCon.GetCon());
+            dbCon.OpenCon();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            cmdCustomer.DataSource = dt;
+            cmdCustomer.DisplayMember = "CustomerName";
+            cmdCustomer.ValueMember = "CustomerID";
             dbCon.CloseCon();
         }
 
@@ -99,6 +113,7 @@ namespace GoMartApplication
             }
 
             int billId;
+            int customerId = Convert.ToInt32(cmdCustomer.SelectedValue);
 
             // 1️⃣ Insert bill
             using (SqlCommand cmd = new SqlCommand("spInsertBill", dbCon.GetCon()))
@@ -106,6 +121,7 @@ namespace GoMartApplication
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@SellerID", SellerID);
                 cmd.Parameters.AddWithValue("@SellDate", DateTime.Now);
+                cmd.Parameters.AddWithValue("@CustomerID", customerId);
 
                 dbCon.OpenCon();
                 billId = Convert.ToInt32(cmd.ExecuteScalar());
