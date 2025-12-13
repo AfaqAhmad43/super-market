@@ -870,3 +870,183 @@ go
 
 -- added indexing on CategoryName
 create index indexCategoryName on tblCategory(CategoryName);
+
+-- Changes to product table
+
+-- Made other properties not null to ensure proper functioning
+alter table tblProduct
+alter column ProdName nvarchar(50) not null;
+
+ALTER TABLE tblProduct ALTER COLUMN ProdCatID int NOT NULL;
+ALTER TABLE tblProduct ALTER COLUMN ProdPrice decimal(10,2) NOT NULL;
+ALTER TABLE tblProduct ALTER COLUMN ProdQty int NOT NULL;
+
+-- Altered prodCatID from category to be a foreign key
+alter table tblProduct
+add constraint FK_ProductCategory
+foreign key (ProdCatID)
+references tblCategory(CatID);
+
+-- Added indexing on prodCatID for better searching
+create index IndexProdCategory
+on tblProduct(ProdCatID);
+
+
+-- Added unique constraint on product name and foreign key
+alter table tblProduct
+add constraint UniqueProduct_Name_Category
+unique (ProdName, ProdCatID);
+
+
+-- Changed spInsertProduct with checks
+alter procedure spInsertProduct 
+(
+    @ProdName nvarchar(50),
+    @ProdCatID int,
+    @ProdPrice decimal (10, 2),
+    @ProdQty int
+)
+as
+begin
+    -- ProdName checks
+    if @ProdName is null
+    begin
+        raiserror('Product name cannot be empty.', 16, 1);
+        return;
+    end
+
+    -- Price check
+    if @ProdPrice <= 0
+    begin
+        raiserror('Product price should be greater than zero.', 16, 1);
+        return;
+    end
+
+    -- Quantity check
+    if @ProdQty < 0
+    begin
+        raiserror('Product quantity cannot be negative', 16, 1);
+        return;
+    end
+
+    -- Category existence checks
+    if not exists (select 1 from tblCategory where CatID = @ProdCatID)
+    begin
+        raiserror('Selected category does not exist.', 16, 1);
+        return;
+    end
+
+    -- Duplicate check
+    if exists (select 1 from tblProduct where ProdName = @ProdName and ProdCatID = @ProdCatID)
+    begin
+        raiserror('Product already exists in this category', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        insert into tblProduct
+        (ProdName, ProdCatID, ProdPrice, ProdQty)
+        values
+        (@ProdName, @ProdCatID, @ProdPrice, @ProdQty);
+
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch
+end
+go
+
+-- spUpdateProduct procedure with checks
+alter procedure spUpdateProduct
+(
+    @ProdID int,
+    @ProdName nvarchar(50),
+    @ProdCatID int,
+    @ProdPrice decimal(10,2),
+    @ProdQty int
+)
+as 
+begin
+-- ProdName checks
+    if @ProdName is null
+    begin
+        raiserror('Product name cannot be empty.', 16, 1);
+        return;
+    end
+
+    -- Price check
+    if @ProdPrice <= 0
+    begin
+        raiserror('Product price should be greater than zero.', 16, 1);
+        return;
+    end
+
+    -- Quantity check
+    if @ProdQty < 0
+    begin
+        raiserror('Product quantity cannot be negative', 16, 1);
+        return;
+    end
+
+    -- Category existence checks
+    if not exists (select 1 from tblCategory where CatID = @ProdCatID)
+    begin
+        raiserror('Selected category does not exist.', 16, 1);
+        return;
+    end
+
+    -- Duplicate check
+    if exists (select 1 from tblProduct where ProdName = @ProdName and ProdCatID = @ProdCatID and ProdID <> @ProdID)
+    begin
+        raiserror('Product already exists in this category', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        update tblProduct 
+        set ProdName = @ProdName,
+            ProdCatID = @ProdCatID,
+            ProdPrice = @ProdPrice,
+            ProdQty = @ProdQty
+        where ProdID = @ProdID;
+
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch
+end
+go
+
+-- spDeleteProduct procedure changes
+alter procedure spDeleteProduct
+(
+    @ProdID int
+)
+as
+begin
+    if not exists (select 1 from tblProduct where ProdID = @ProdID)
+    begin
+        raiserror('Product does not exist.', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        delete from tblProduct where ProdID = @ProdID;
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch;
+end
+go

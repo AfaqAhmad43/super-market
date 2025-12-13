@@ -11,7 +11,7 @@ namespace GoMartApplication
 {
     class DBConnect
     {
-        private SqlConnection con = new SqlConnection(@"data source=DESKTOP-EHOFH5S\SQLEXPRESS;initial catalog=GoMartDB;trusted_connection=true");
+        private SqlConnection con = new SqlConnection(@"data source=DESKTOP-8B4GOKA\SQLEXPRESS;initial catalog=GoMartDB;trusted_connection=true");
         public SqlConnection GetCon()
 
         {
