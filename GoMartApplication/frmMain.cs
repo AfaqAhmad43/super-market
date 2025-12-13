@@ -93,7 +93,7 @@ namespace GoMartApplication
 
         private void sellerToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            SellingForm sf = new SellingForm();
+            SellingForm sf = new SellingForm(Form1.SellerID);
             sf.ShowDialog();
         }
     }

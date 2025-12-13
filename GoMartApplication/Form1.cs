@@ -20,6 +20,8 @@ namespace GoMartApplication
             InitializeComponent();
         }
 
+        public static int SellerID;
+
         private void Form1_Load(object sender, EventArgs e)
         {
             cmbRole.SelectedIndex = 1;
@@ -77,7 +79,7 @@ namespace GoMartApplication
                         }
                         else if(cmbRole.Text == "Seller")
                         {
-                            SqlCommand cmd = new SqlCommand("select top 1 SellerName,SellerPass from tblSeller where SellerName=@SellerName and SellerPass=@SellerPass", dbCon.GetCon());
+                            SqlCommand cmd = new SqlCommand("select top 1 SellerID, SellerName,SellerPass from tblSeller where SellerName=@SellerName and SellerPass=@SellerPass", dbCon.GetCon());
                             cmd.Parameters.AddWithValue("@SellerName", txtUsername.Text);
                             cmd.Parameters.AddWithValue("@SellerPass", txtPass.Text);
                             dbCon.OpenCon();
@@ -87,12 +89,16 @@ namespace GoMartApplication
                             if (dt.Rows.Count > 0)
                             {
                                 MessageBox.Show("Login Success Welcome to Home Page", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                Form1.SellerID = Convert.ToInt32(dt.Rows[0]["SellerID"]);
+
                                 loginname = txtUsername.Text;
                                 logintype = cmbRole.Text;
                                 clrValue();
                                 this.Hide();
                                 frmMain fm = new frmMain();
                                 fm.Show();
+
                             }
                             else
                             {

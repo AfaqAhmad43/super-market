@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GoMartApplication
@@ -14,184 +8,155 @@ namespace GoMartApplication
     public partial class SellingForm : Form
     {
         DBConnect dbCon = new DBConnect();
-        public SellingForm()
+        private int SellerID;       // Seller ID of logged-in seller
+        double GrandTotal = 0.0;
+
+        public SellingForm(int sellerId)
         {
             InitializeComponent();
+            SellerID = sellerId;
         }
-        double GrandTotal = 0.0;
-        int n = 0;
+
         private void SellingForm_Load(object sender, EventArgs e)
         {
             BindCategory();
             lblDate.Text = DateTime.Now.ToShortDateString();
             BindBillList();
         }
-        private void Searched_ProductList()
-        {
-            try
-            {
-                SqlCommand cmd = new SqlCommand("spGetAllProductList_SearchByCat", dbCon.GetCon());
-                cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
-                cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dataGridView2_Product.DataSource = dt;
-                dbCon.CloseCon();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
+        // Bind categories to combo box
         private void BindCategory()
         {
-            try
-            {
-                SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
-                cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                cmbCategory.DataSource = dt;
-                cmbCategory.DisplayMember = "CategoryName";
-                cmbCategory.ValueMember = "CatID";
-                dbCon.CloseCon();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
+            SqlCommand cmd = new SqlCommand("spGetCategory", dbCon.GetCon());
+            cmd.CommandType = CommandType.StoredProcedure;
+            dbCon.OpenCon();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            cmbCategory.DataSource = dt;
+            cmbCategory.DisplayMember = "CategoryName";
+            cmbCategory.ValueMember = "CatID";
+            dbCon.CloseCon();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        // Search products by category
+        private void Searched_ProductList()
         {
-            Searched_ProductList();
+            SqlCommand cmd = new SqlCommand("spGetAllProductList_SearchByCat", dbCon.GetCon());
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@ProdCatID", cmbCategory.SelectedValue);
+            dbCon.OpenCon();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            dataGridView2_Product.DataSource = dt;
+            dbCon.CloseCon();
         }
 
-        private void dataGridView2_Product_DoubleClick(object sender, EventArgs e)
-        {
-           
-        }
+        private void btnRefCat_Click(object sender, EventArgs e) => BindCategory();
+        private void button3_Click(object sender, EventArgs e) => Searched_ProductList();
 
+        // Select product from grid
         private void dataGridView2_Product_Click(object sender, EventArgs e)
         {
             try
             {
-                txtProdID.Clear();
                 txtProdID.Text = dataGridView2_Product.SelectedRows[0].Cells[0].Value.ToString();
-                txtProductName.Clear();
                 txtProductName.Text = dataGridView2_Product.SelectedRows[0].Cells[1].Value.ToString();
-                //cmbCategory.SelectedValue = dataGridView2_Product.SelectedRows[0].Cells[3].Value.ToString();
-                txtPrice.Clear();
                 txtPrice.Text = dataGridView2_Product.SelectedRows[0].Cells[4].Value.ToString();
-                //txtQty.Text = dataGridView2_Product.SelectedRows[0].Cells[5].Value.ToString();
                 txtQty.Clear();
                 txtQty.Focus();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
+            catch { }
         }
 
+        // Add order to grid (local only)
         private void btnAddOrder_Click(object sender, EventArgs e)
         {
-            try
+            if (txtProdID.Text == "" || txtQty.Text == "")
             {
-                if(txtPrice.Text=="" || txtQty.Text=="")
-                {
-                    MessageBox.Show("Enter valid Qty or Prince", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    double Total = Convert.ToDouble(txtPrice.Text) * Convert.ToInt32(txtQty.Text);
-                    DataGridViewRow addrow = new DataGridViewRow();
-                    addrow.CreateCells(dataGridView1_Order);
-                    addrow.Cells[0].Value = ++n;
-                    addrow.Cells[1].Value = txtProductName.Text;
-                    addrow.Cells[2].Value = txtPrice.Text;
-                    addrow.Cells[3].Value = txtQty.Text;
-                    addrow.Cells[4].Value = Total;
-                    dataGridView1_Order.Rows.Add(addrow);
-                    GrandTotal += Total;
-                    lblGrandTot.Text = "Rs." + GrandTotal;
-                }
-                
+                MessageBox.Show("Select product and quantity");
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            int prodId = Convert.ToInt32(txtProdID.Text);
+            string name = txtProductName.Text;
+            decimal price = Convert.ToDecimal(txtPrice.Text);
+            int qty = Convert.ToInt32(txtQty.Text);
+
+            dataGridView1_Order.Rows.Add(prodId, name, price, qty);
+            GrandTotal += (double)(price * qty);
+            lblGrandTot.Text = "Rs. " + GrandTotal;
         }
 
-        private void btnRefCat_Click(object sender, EventArgs e)
-        {
-            
-        }
-
+        // Add bill and details to database
         private void btnAddBill_Details_Click(object sender, EventArgs e)
         {
-            try
+            if (dataGridView1_Order.Rows.Count == 0)
             {
-                if(txtBillNo.Text=="")
+                MessageBox.Show("No items in bill");
+                return;
+            }
+
+            int billId;
+
+            // 1️⃣ Insert bill
+            using (SqlCommand cmd = new SqlCommand("spInsertBill", dbCon.GetCon()))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@SellerID", SellerID);
+                cmd.Parameters.AddWithValue("@SellDate", DateTime.Now);
+
+                dbCon.OpenCon();
+                billId = Convert.ToInt32(cmd.ExecuteScalar());
+                dbCon.CloseCon();
+            }
+
+            // 2️⃣ Insert each bill item
+            foreach (DataGridViewRow row in dataGridView1_Order.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                using (SqlCommand cmd = new SqlCommand("spAddBillItem", dbCon.GetCon()))
                 {
-                    MessageBox.Show("Enter Bill Number", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-                else
-                {
-                    SqlCommand cmd = new SqlCommand("spInsertBill", dbCon.GetCon());
-                    cmd.Parameters.AddWithValue("@Bill_ID", txtBillNo.Text);
-                    cmd.Parameters.AddWithValue("@SellerID", Form1.loginname);
-                    cmd.Parameters.AddWithValue("@SellDate", lblDate.Text);
-                    cmd.Parameters.AddWithValue("@TotalAmt", Convert.ToDouble(txtQty.Text));
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Bill_ID", billId);
+                    cmd.Parameters.AddWithValue("@ProdID", Convert.ToInt32(row.Cells["ProdID"].Value));
+                    cmd.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row.Cells["Quantity"].Value));
+                    cmd.Parameters.AddWithValue("@Price", Convert.ToDecimal(row.Cells["Price"].Value));
+
                     dbCon.OpenCon();
-                    int i = cmd.ExecuteNonQuery();
-                    if (i > 0)
-                    {
-                        BindBillList();
-                        MessageBox.Show("Bill Added Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        clrtext();
-                    }
+                    cmd.ExecuteNonQuery();
                     dbCon.CloseCon();
                 }
+            }
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            MessageBox.Show("Bill saved successfully");
+
+            ClearForm();
+            BindBillList();
         }
-        private void clrtext()
+
+        private void ClearForm()
         {
-            txtBillNo.Clear();
-            dataGridView1_Order.DataSource = null;
-            txtPrice.Clear();
+            dataGridView1_Order.Rows.Clear();
             txtProdID.Clear();
             txtProductName.Clear();
+            txtPrice.Clear();
             txtQty.Clear();
-            lblGrandTot.Text = "0.0";
+            lblGrandTot.Text = "Rs. 0";
+            GrandTotal = 0;
         }
-            
+
         private void BindBillList()
         {
-            try
+            using (SqlCommand cmd = new SqlCommand("spGetBillList", dbCon.GetCon()))
             {
-                SqlCommand cmd = new SqlCommand("spGetBillList", dbCon.GetCon());
                 cmd.CommandType = CommandType.StoredProcedure;
-                dbCon.OpenCon();
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridView1.DataSource = dt;
-                dbCon.CloseCon();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
