@@ -43,121 +43,51 @@ namespace GoMartApplication
                 txtPhone.Focus();
                 return;
             }
-
-            try
-            {
-                SqlCommand cmd = new SqlCommand("spCustomerInsert", dbCon.GetCon());
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
-                cmd.Parameters.AddWithValue("@CustomerPhone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@CustomerEmail", txtEmail.Text);
-                cmd.Parameters.AddWithValue("@CustomerAddress", txtAddress.Text);
-
-                dbCon.OpenCon();
-                int i = cmd.ExecuteNonQuery();
-                dbCon.CloseCon();
-
-                if (i > 0)
-                {
-                    MessageBox.Show("Customer Inserted Successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    txtClear();
-                    BindCustomer();
-                }
-                else
-                {
-                    MessageBox.Show("Insert failed. Check console or procedure messages.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show(ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-        }
-
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            if (lblCustID.Text == String.Empty)
-            {
-                MessageBox.Show("Please select CustomerID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                SqlCommand cmd = new SqlCommand("spCustomerUpdate", dbCon.GetCon());
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@CustomerID", Convert.ToInt32(lblCustID.Text));
-                cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
-                cmd.Parameters.AddWithValue("@CustomerPhone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@CustomerEmail", txtEmail.Text);
-                cmd.Parameters.AddWithValue("@CustomerAddress", txtAddress.Text);
-
-                dbCon.OpenCon();
-                int i = cmd.ExecuteNonQuery();
-                dbCon.CloseCon();
-
-                if (i > 0)
-                {
-                    MessageBox.Show("Customer Updated Successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    txtClear();
-                    BindCustomer();
-                    btnUpdate.Visible = false;
-                    btnDelete.Visible = false;
-                    btnAdd.Visible = true;
-                    lblCustID.Visible = false;
-                }
-                else
-                {
-                    MessageBox.Show("Update failed. Check procedure messages.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show(ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnDelete_Click(object sender, EventArgs e)
-        {
-            if (lblCustID.Text == String.Empty)
-            {
-                MessageBox.Show("Please select CustomerID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (DialogResult.Yes == MessageBox.Show("Do you want to delete?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            else
             {
                 try
                 {
-                    SqlCommand cmd = new SqlCommand("spCustomerDelete", dbCon.GetCon());
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@CustomerID", Convert.ToInt32(lblCustID.Text));
-
+                    SqlCommand cmd = new SqlCommand("select CustomerName from tblCustomer where CustomerName=@CustomerName", dbCon.GetCon());
+                    cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
                     dbCon.OpenCon();
-                    int i = cmd.ExecuteNonQuery();
-                    dbCon.CloseCon();
-
-                    if (i > 0)
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
                     {
-                        MessageBox.Show("Customer Deleted Successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Customer Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtClear();
-                        BindCustomer();
-                        btnUpdate.Visible = false;
-                        btnDelete.Visible = false;
-                        btnAdd.Visible = true;
-                        lblCustID.Visible = false;
                     }
                     else
                     {
-                        MessageBox.Show("Delete failed. Check procedure messages.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        cmd = new SqlCommand("spCustomerInsert", dbCon.GetCon());
+                        cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
+                        cmd.Parameters.AddWithValue("@CustomerPhone", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@CustomerEmail", txtEmail.Text);
+                        cmd.Parameters.AddWithValue("@CustomerAddress", txtAddress.Text);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        int i = cmd.ExecuteNonQuery();
+                        if (i > 0)
+                        {
+                            MessageBox.Show("Customer Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            txtClear();
+                            BindCustomer();
+                        }
                     }
                 }
                 catch (SqlException ex)
                 {
                     MessageBox.Show(ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                finally
+                {
+                    dbCon.CloseCon();
+                }
             }
+
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            
         }
 
         private void txtClear()
@@ -199,6 +129,120 @@ namespace GoMartApplication
                 txtPhone.Text = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
                 txtEmail.Text = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
                 txtAddress.Text = dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
+            }
+        }
+
+        private void btnUpdate_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                if (lblCustID.Text == String.Empty)
+                {
+                    MessageBox.Show("Please select custID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+                if (lblCustID.Text == String.Empty)
+                {
+                    MessageBox.Show("Please Enter Name", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtCustName.Focus();
+                    return;
+                }
+                else if (txtPhone.Text == String.Empty)
+                {
+                    MessageBox.Show("Please Enter Password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtPhone.Focus();
+                    return;
+                }
+                else
+                {
+                    SqlCommand cmd = new SqlCommand("select CustomerName from tblCustomer where CustomerName=@CustomerName", dbCon.GetCon());
+                    cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
+
+                    dbCon.OpenCon();
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        MessageBox.Show("Customer Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtClear();
+                    }
+                    else
+                    {
+                        cmd = new SqlCommand("spCustomerUpdate", dbCon.GetCon());
+                        cmd.Parameters.AddWithValue("@CustomerID", Convert.ToInt32(lblCustID.Text));
+                        cmd.Parameters.AddWithValue("@CustomerName", txtCustName.Text);
+                        cmd.Parameters.AddWithValue("@CustomerPhone", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@CustomerEmail", txtEmail.Text);
+                        cmd.Parameters.AddWithValue("@CustomerAddress", txtAddress.Text);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        int i = cmd.ExecuteNonQuery();
+                        dbCon.CloseCon();
+                        if (i > 0)
+                        {
+                            MessageBox.Show("customer updated Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            txtClear();
+                            BindCustomer();
+                            btnUpdate.Visible = false;
+                            btnDelete.Visible = false;
+                            btnAdd.Visible = true;
+                            lblCustID.Visible = false;
+                        }
+                        else
+                        {
+                            MessageBox.Show("update failed...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            txtClear();
+                        }
+                    }
+                    dbCon.CloseCon();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnDelete_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                if (lblCustID.Text == String.Empty)
+                {
+                    MessageBox.Show("Please select CategoryID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (lblCustID.Text != String.Empty)
+                {
+                    if (DialogResult.Yes == MessageBox.Show("Do You Want to Delete?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                    {
+                        SqlCommand cmd = new SqlCommand("spCustomerDelete", dbCon.GetCon());
+                        cmd.Parameters.AddWithValue("@CustomerID", Convert.ToInt32(lblCustID.Text));
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        dbCon.OpenCon();
+                        int i = cmd.ExecuteNonQuery();
+                        if (i > 0)
+                        {
+                            MessageBox.Show("Seller Deleted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            txtClear();
+                            BindCustomer();
+                            btnUpdate.Visible = false;
+                            btnDelete.Visible = false;
+                            btnAdd.Visible = true;
+                            lblCustID.Visible = false;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Delete failed...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            txtClear();
+                        }
+                        dbCon.CloseCon();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

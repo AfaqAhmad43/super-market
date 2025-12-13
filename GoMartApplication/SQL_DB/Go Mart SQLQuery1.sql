@@ -1438,3 +1438,72 @@ begin
     order by b.Bill_ID desc;
 end
     
+--- Customer table
+create table tblCustomer
+(
+    CustomerID int identity(1,1) primary key,
+    CustomerName nvarchar(50) not null,
+    Phone nvarchar(15) not null,
+    Email nvarchar(50) not null,
+    Address nvarchar(100) not null,
+    CreatedDate datetime default getdate()
+);
+
+-- Procedures
+
+
+exec sp_rename 'tblCustomer.Phone', 'CustomerPhone', 'COLUMN'
+
+exec sp_rename 'tblCustomer.Email', 'CustomerEmail', 'COLUMN'
+
+exec sp_rename 'tblCustomer.Address', 'CustomerAddress', 'COLUMN'
+
+CREATE PROCEDURE spCustomerInsert
+    @CustomerName NVARCHAR(50),
+    @CustomerPhone NVARCHAR(15),
+    @CustomerEmail NVARCHAR(50),
+    @CustomerAddress NVARCHAR(100)
+AS
+BEGIN
+    -- Check if customer already exists
+    IF EXISTS (SELECT 1 FROM tblCustomer WHERE CustomerName = @CustomerName)
+    BEGIN
+        PRINT 'Customer Name already exists';
+        RETURN;
+    END
+
+    -- Insert customer
+    INSERT INTO tblCustomer (CustomerName, CustomerPhone, CustomerEmail, CustomerAddress)
+    VALUES (@CustomerName, @CustomerPhone, @CustomerEmail, @CustomerAddress)
+END
+
+alter PROCEDURE spCustomerUpdate
+    @CustomerID INT,
+    @CustomerName NVARCHAR(100),
+    @CustomerPhone NVARCHAR(20),
+    @CustomerEmail NVARCHAR(100),
+    @CustomerAddress NVARCHAR(200)
+AS
+BEGIN
+
+    BEGIN TRY
+        -- Checks
+        IF NOT EXISTS (SELECT 1 FROM tblCustomer WHERE CustomerID = @CustomerID)
+            THROW 50003, 'Customer ID does not exist', 1;
+
+        IF EXISTS (SELECT 1 FROM tblCustomer WHERE CustomerName = @CustomerName AND CustomerID <> @CustomerID)
+            THROW 50004, 'Customer Name already exists for another record', 1;
+
+        -- Update
+        UPDATE tblCustomer
+        SET CustomerName = @CustomerName,
+            CustomerPhone = @CustomerPhone,
+            CustomerEmail = @CustomerEmail,
+            CustomerAddress = @CustomerAddress
+        WHERE CustomerID = @CustomerID;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
