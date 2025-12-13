@@ -44,32 +44,42 @@ namespace GoMartApplication
             }
             else
             {
-                SqlCommand cmd = new SqlCommand("select SellerName from tblSeller where SellerName=@SellerName", dbCon.GetCon());
-                cmd.Parameters.AddWithValue("@SellerName", txtSellerName.Text);
-                dbCon.OpenCon();
-                var result = cmd.ExecuteScalar();
-                if (result != null)
+                try
                 {
-                    MessageBox.Show("Seller Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtClear();
-                }
-                else
-                {
-                    cmd = new SqlCommand("spSellerInsert", dbCon.GetCon());
+                    SqlCommand cmd = new SqlCommand("select SellerName from tblSeller where SellerName=@SellerName", dbCon.GetCon());
                     cmd.Parameters.AddWithValue("@SellerName", txtSellerName.Text);
-                    cmd.Parameters.AddWithValue("@SellerAge", Convert.ToInt32(txtAge.Text));
-                    cmd.Parameters.AddWithValue("@SellerPhone", txtPhone.Text);
-                    cmd.Parameters.AddWithValue("@SellerPass", txtPass.Text);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    int i = cmd.ExecuteNonQuery();
-                    if (i > 0)
+                    dbCon.OpenCon();
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
                     {
-                        MessageBox.Show("Seller Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Seller Name already exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         txtClear();
-                        BindSeller();
+                    }
+                    else
+                    {
+                        cmd = new SqlCommand("spSellerInsert", dbCon.GetCon());
+                        cmd.Parameters.AddWithValue("@SellerName", txtSellerName.Text);
+                        cmd.Parameters.AddWithValue("@SellerAge", Convert.ToInt32(txtAge.Text));
+                        cmd.Parameters.AddWithValue("@SellerPhone", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@SellerPass", txtPass.Text);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        int i = cmd.ExecuteNonQuery();
+                        if (i > 0)
+                        {
+                            MessageBox.Show("Seller Inserted Successfully...", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            txtClear();
+                            BindSeller();
+                        }
                     }
                 }
-                dbCon.CloseCon();
+                catch (SqlException ex)
+                {
+                    MessageBox.Show(ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    dbCon.CloseCon();
+                }
             }
         }
 

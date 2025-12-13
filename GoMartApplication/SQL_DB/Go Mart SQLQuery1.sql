@@ -545,13 +545,24 @@ begin
 end;
 go
 
+-- Seller table changes
+alter table tblSeller 
+alter column SellerName nvarchar(50) not null;
 
--- Changes to category table
--- Checks for the Seller 
+alter table tblSeller
+alter column SellerAge int not null;
+
+-- Age Check
+alter table tblSeller
+alter column SellerPhone nvarchar(10) not null;
+
+alter table tblSeller
+alter column SellerPass nvarchar(50) not null;
+
 alter procedure spSellerInsert
 @SellerName nvarchar(50),
 @SellerAge int, 
-@SellerPhone nvarchar(50),
+@SellerPhone nvarchar(10),
 @SellerPass nvarchar(50)
 as begin 
 -- Validation for the Seller Name Same 
@@ -566,6 +577,13 @@ as begin 
         raiserror('SellerName cannot be more than 50 characters.', 16, 1);
         return;
     end
+
+    if exists(select 1 from tblSeller where SellerName = @SellerName)
+    begin
+        raiserror('Seller name already exists.',16, 1);
+        return;
+    end
+
     --Validation for the Seller Age 
     if @SellerAge  is null
     begin
@@ -573,18 +591,30 @@ as begin 
         return;
     end
       
+    if @SellerAge < 18 or @SellerAge > 100
+    begin
+        raiserror('Seller age must be between 18 and 100.', 16, 1);
+        return
+    end
 
     --Validation for the Seller Phone 
-       if @SellerPhone  is null
+    if @SellerPhone  is null
     begin
         raiserror('Seller Phone Number is Must ', 16, 1);
         return;
     end
-       if LEN(@SellerPhone)  >50
+
+    if LEN(@SellerPhone)  >10
     begin
         raiserror('Seller  Phone Number Cannot be Greater then the 50 ', 16, 1);
         return;
     end
+
+    if @SellerPhone like '%[^0-9]%'
+    begin
+        raiserror('Seller phone must be exactly 10 digits', 16, 1);
+        return;
+    end
     -- Validation for the Seller  Password
 
    if @SellerPass  is null
@@ -609,17 +639,15 @@ as begin 
     end catch
 
 end
--- Checks for the Updating Seller 
--- Checks for the Updating Seller 
--- Checks for the Updating Seller 
 go
 
+-- Checks for the Updating Seller 
 alter procedure spSellerUpadte
 (
 @SellerID int,
 @SellerName nvarchar(50),
 @SellerAge int, 
-@SellerPhone nvarchar(50),
+@SellerPhone nvarchar(10),
 @SellerPass nvarchar(50)
 )
 as
@@ -631,10 +659,10 @@ begin
         return;
     end
 
-    -- Validation for Seller Name (ADDED)
-    if @SellerName is null
+    -- Validation for the Seller Name Same 
+ if @SellerName is null
     begin
-        raiserror('Seller Name cannot be empty.', 16, 1);
+        raiserror('Seller  Name  cannot be empty', 16, 1);
         return;
     end
 
@@ -643,37 +671,54 @@ begin
         raiserror('SellerName cannot be more than 50 characters.', 16, 1);
         return;
     end
-    
-    -- Validation for Seller Age (ADDED)
-    if @SellerAge is null
+
+    if exists(select 1 from tblSeller where SellerName = @SellerName)
+    begin
+        raiserror('Seller name already exists.',16, 1);
+        return;
+    end
+
+    --Validation for the Seller Age 
+    if @SellerAge  is null
     begin
-        raiserror('Seller Age cannot be empty.', 16, 1);
+        raiserror('Seller  Age   cannot be empty', 16, 1);
         return;
     end
-    
-    -- Validation for Seller Phone (ADDED)
-    if @SellerPhone is null
+      
+    if @SellerAge < 18 or @SellerAge > 100
+    begin
+        raiserror('Seller age must be between 18 and 100.', 16, 1);
+        return
+    end
+
+    --Validation for the Seller Phone 
+    if @SellerPhone  is null
     begin
-        raiserror('Seller Phone Number is Must.', 16, 1);
+        raiserror('Seller Phone Number is Must ', 16, 1);
         return;
     end
 
-    if LEN(@SellerPhone) > 50
+    if LEN(@SellerPhone)  >10
     begin
-        raiserror('Seller Phone Number Cannot be Greater than 50.', 16, 1);
+        raiserror('Seller  Phone Number Cannot be Greater then the 50 ', 16, 1);
         return;
     end
 
-    -- Validation for Seller Password (ADDED)
-    if @SellerPass is null
+    if @SellerPhone like '%[^0-9]%'
+    begin
+        raiserror('Seller phone must be exactly 10 digits', 16, 1);
+        return;
+    end
+    -- Validation for the Seller  Password
+
+   if @SellerPass  is null
     begin
-        raiserror('Seller Password Cannot be Empty.', 16, 1);
+        raiserror('Seller Password  Cannot be Empty  ', 16, 1);
         return;
     end
-
-    if LEN(@SellerPass) > 50
+       if LEN(@SellerPass)  >50
     begin
-        raiserror('Seller Password Cannot be Greater than 50.', 16, 1);
+        raiserror('Seller  PassWord  Cannot be Greater then the 50 ', 16, 1);
         return;
     end
 
@@ -727,6 +772,8 @@ begin
 end
 go
 
+
+-- Changes to category table
 alter table tblCategory
 alter column CategoryName nvarchar(50) not null;
 
