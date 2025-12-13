@@ -1097,3 +1097,344 @@ begin
     end catch;
 end
 go
+
+-- Bill table changes
+alter table tblBill
+drop column totalAmt
+
+alter table tblBill
+alter column SellerID int not null;
+
+alter table tblBill
+alter column SellDate datetime not null;
+
+alter table tblBill 
+add newBillID int identity(1,1);
+
+alter table tblBill
+drop constraint PK__tblBill__CF6E7D43CFBB0F34;
+
+alter table tblBill
+add constraint PK_tblBill primary key (newBillID)
+
+alter table tblBill
+drop column Bill_ID
+
+exec sp_rename 'tblBill.NewBillID', 'Bill_ID', 'COLUMN';
+
+alter table tblBill
+add constraint FK_tblBill_Seller
+foreign key (SellerID) references tblSeller(SellerID);
+
+-- Creating bill details table
+create table tblBillDetails
+(
+    BillDetailID int identity(1,1) primary key,
+    Bill_ID int not null,
+    ProdID int not null,
+    Quantity int not null check (Quantity > 0),
+    Price decimal(10, 2) not null check (Price >= 0),
+    foreign key (Bill_ID) references tblBill(Bill_ID),
+    foreign key (ProdID) references tblProduct(ProdID)
+)
+
+-- spInsertBill changes
+alter procedure spInsertBill
+(
+    @SellerID int,
+    @SellDate datetime,
+    @Bill_ID int output
+)
+as
+begin
+    --Validate if seller actually exists
+    if not exists(select 1 from tblSeller where SellerID = @SellerID)
+    begin
+        raiserror('Seller does not exist', 16, 1);
+        return;
+    end
+
+    begin transaction
+    begin try
+        insert into tblBill(SellerID, SellDate)
+        values (@SellerID, @SellDate)
+
+        set @Bill_ID = SCOPE_IDENTITY();
+
+        commit transaction;
+    end try
+
+    begin catch
+        rollback transaction;
+        throw;
+    end catch
+end
+go
+
+CREATE OR ALTER PROCEDURE spInsertBillDetails
+(
+    @Bill_ID int,
+    @ProdID int,
+    @Quantity int,
+    @Price decimal(10,2)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM tblBill WHERE Bill_ID = @Bill_ID)
+    BEGIN
+        RAISERROR('Bill does not exist.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM tblProduct WHERE ProdID = @ProdID)
+    BEGIN
+        RAISERROR('Product does not exist.', 16, 1);
+        RETURN;
+    END
+
+    IF @Quantity <= 0
+    BEGIN
+        RAISERROR('Quantity must be greater than 0.', 16, 1);
+        RETURN;
+    END
+
+    IF @Price < 0
+    BEGIN
+        RAISERROR('Price cannot be negative.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION
+    BEGIN TRY
+        INSERT INTO tblBillDetails (Bill_ID, ProdID, Quantity, Price)
+        VALUES (@Bill_ID, @ProdID, @Quantity, @Price);
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        THROW
+    END CATCH
+END
+GO
+
+
+alter PROCEDURE spInsertBill
+    @SellerID INT,
+    @SellDate DATETIME,
+    @Bill_ID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO tblBill (SellerID, SellDate)
+    VALUES (@SellerID, @SellDate);
+
+    -- Return the new Bill_ID
+    SET @Bill_ID = SCOPE_IDENTITY();
+END
+
+alter PROCEDURE spInsertBillDetails
+    @Bill_ID INT,
+    @ProdID INT,
+    @Quantity INT,
+    @Price DECIMAL(10,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Basic validation
+    IF @Quantity <= 0
+    BEGIN
+        RAISERROR('Quantity must be greater than 0', 16, 1);
+        RETURN;
+    END
+
+    IF @Price < 0
+    BEGIN
+        RAISERROR('Price must be non-negative', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO tblBillDetails (Bill_ID, ProdID, Quantity, Price)
+    VALUES (@Bill_ID, @ProdID, @Quantity, @Price);
+END
+
+
+-- Gemini try
+alter procedure spInsertBill
+(
+    @SellerID int,
+    @SellDate datetime
+)
+as
+begin
+    set nocount on;
+    
+    -- Seller Existence Check (Crucial for Foreign Key integrity)
+    if not exists (select 1 from tblSeller where SellerID = @SellerID)
+    begin
+        raiserror('Invalid SellerID: Seller does not exist.', 16, 1);
+        return -1; -- Use a return value to indicate failure
+    end
+
+    begin transaction
+    begin try
+        insert into tblBill (SellerID, SellDate) 
+        values (@SellerID, @SellDate);
+        
+        -- Return the newly generated Bill_ID
+        select SCOPE_IDENTITY() as NewBillID; 
+
+        commit transaction;
+    end try
+    begin catch
+        if @@TRANCOUNT > 0
+            rollback transaction;
+        -- Re-throw the error
+        throw; 
+    end catch
+    
+    return 0; -- Return 0 on success
+end
+go
+
+create procedure spGetSellerID
+(
+    @SellerName nvarchar(50)
+)
+as
+begin
+    set nocount on;
+    -- Returns the SellerID. If the name does not exist, it returns NULL or an empty result set.
+    select SellerID from tblSeller where SellerName = @SellerName;
+end
+go
+
+create procedure spInsertBillDetail
+(
+    @Bill_ID int,
+    @ProdID int,
+    @Quantity int,
+    @Price decimal(10, 2)
+)
+as
+begin
+    set nocount on;
+    
+    -- Validation Checks (based on table constraints)
+    if @Quantity <= 0
+    begin
+        raiserror('Quantity must be greater than zero.', 16, 1);
+        return;
+    end
+    
+    if @Price < 0
+    begin
+        raiserror('Price cannot be negative.', 16, 1);
+        return;
+    end
+    
+    -- Foreign Key Existence Checks
+    if not exists (select 1 from tblBill where Bill_ID = @Bill_ID)
+    begin
+        raiserror('Bill ID does not exist.', 16, 1);
+        return;
+    end
+    
+    if not exists (select 1 from tblProduct where ProdID = @ProdID)
+    begin
+        raiserror('Product ID does not exist.', 16, 1);
+        return;
+    end
+    
+    begin transaction
+    begin try
+        insert into tblBillDetails (Bill_ID, ProdID, Quantity, Price)
+        values (@Bill_ID, @ProdID, @Quantity, @Price);
+        
+        -- Optional: Add logic here to update the quantity (ProdQty) in tblProduct
+        
+        commit transaction;
+    end try
+    begin catch
+        if @@TRANCOUNT > 0
+            rollback transaction;
+        throw;
+    end catch
+end
+go
+
+
+----trying
+
+create or alter procedure spInsertBill
+    @SellerID int,
+    @SellDate datetime
+as
+begin
+    set nocount on;
+
+    -- validate seller
+    if not exists (select 1 from tblSeller where SellerID = @SellerID)
+    begin
+        raiserror('Invalid Seller ID', 16, 1);
+        return;
+    end
+
+    insert into tblBill (SellerID, SellDate)
+    values (@SellerID, @SellDate);
+
+    -- return generated Bill_ID
+    select scope_identity() as Bill_ID;
+end
+
+create or alter procedure spAddBillItem
+    @Bill_ID int,
+    @ProdID int,
+    @Quantity int,
+    @Price decimal(10,2)
+as
+begin
+    set nocount on;
+
+    if not exists (select 1 from tblBill where Bill_ID = @Bill_ID)
+    begin
+        raiserror('Invalid Bill ID', 16, 1);
+        return;
+    end
+
+    if not exists (select 1 from tblProduct where ProdID = @ProdID)
+    begin
+        raiserror('Invalid Product ID', 16, 1);
+        return;
+    end
+
+    if @Quantity <= 0 or @Price < 0
+    begin
+        raiserror('Invalid quantity or price', 16, 1);
+        return;
+    end
+
+    insert into tblBillDetails (Bill_ID, ProdID, Quantity, Price)
+    values (@Bill_ID, @ProdID, @Quantity, @Price);
+end
+
+create or alter procedure spGetBillList
+as
+begin
+    set nocount on;
+
+    select
+        b.Bill_ID,
+        s.Username as Seller,
+        b.SellDate,
+        isnull(sum(d.Quantity * d.Price), 0) as TotalAmt
+    from tblBill b
+    join tblSeller s on s.SellerID = b.SellerID
+    left join tblBillDetails d on d.Bill_ID = b.Bill_ID
+    group by b.Bill_ID, s.Username, b.SellDate
+    order by b.Bill_ID desc;
+end
+    
