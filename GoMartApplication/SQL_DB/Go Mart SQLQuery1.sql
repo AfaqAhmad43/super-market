@@ -1507,3 +1507,95 @@ BEGIN
         THROW;
     END CATCH
 END
+
+-- History tables
+
+create table tblCustomerHistory
+(
+    HistoryID int identity(1,1) primary key,
+    CustomerID int,
+    CustomerName nvarchar(100),
+    CustomerPhone nvarchar(20),
+    CustomerEmail nvarchar(100),
+    CustomerAddress nvarchar(200),
+
+    ActionType nvarchar(10),
+    ActionDate datetime default getdate()
+)
+
+-- Triggers
+create trigger trg_Customer_Insert
+on tblCustomer
+after insert
+as
+begin
+    insert into tblCustomerHistory
+    (
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        ActionType
+    )
+    select
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        'INSERT'
+    from inserted;
+end;
+
+create trigger trg_customer_update
+on tblCustomer
+after update
+as
+begin
+    insert into tblCustomerHistory
+    (
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        ActionType,
+        ActionDate
+    )
+    select
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        'update',
+        getdate()
+    from inserted;
+end;
+
+create trigger trg_customer_delete
+on tblCustomer
+after delete
+as
+begin
+    insert into tblCustomerHistory
+    (
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        ActionType,
+        ActionDate
+    )
+    select
+        CustomerID,
+        CustomerName,
+        CustomerPhone,
+        CustomerEmail,
+        CustomerAddress,
+        'delete',
+        getdate()
+    from deleted;
+end;
