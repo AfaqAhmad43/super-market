@@ -1643,3 +1643,65 @@ begin
     from deleted
 end
 
+-- Customer history table
+create table tblProductHistory
+(
+    historyID int identity(1,1) primary key,
+    productID int,
+    productName varchar(100),
+    categoryID int,
+    price decimal(18,2),
+    quantity int,
+    actionType varchar(10), 
+    actionDate datetime default getdate(),
+    performedBy varchar(50)
+)
+
+create trigger tr_product_insert
+on tblProduct
+after insert
+as
+begin
+    insert into tblProductHistory(productID, productName, categoryID, price, quantity, actionType)
+    select 
+        i.prodID,
+        i.prodName,
+        i.prodCatID,
+        i.prodPrice,
+        i.prodQty,
+        'Insert'
+    from inserted i
+end
+
+create trigger tr_product_update
+on tblProduct
+after update
+as
+begin
+    insert into tblProductHistory(productID, productName, categoryID, price, quantity, actionType)
+    select 
+        i.prodID,
+        i.prodName,
+        i.prodCatID,
+        i.prodPrice,
+        i.prodQty,
+        'Update'
+    from inserted i
+end
+
+create trigger tr_product_delete
+on tblProduct
+after delete
+as
+begin
+    insert into tblProductHistory(productID, productName, categoryID, price, quantity, actionType)
+    select 
+        d.prodID,
+        d.prodName,
+        d.prodCatID,
+        d.prodPrice,
+        d.prodQty,
+        'Delete'
+    from deleted d
+end
+

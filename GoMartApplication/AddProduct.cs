@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoMartApplication.SQL_DB;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -313,6 +314,18 @@ namespace GoMartApplication
         private void button1_Click(object sender, EventArgs e)
         {
             BindProductList();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            int? productId = null; // optional, pass selected product ID if you want to filter
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                productId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ProdID"].Value);
+            }
+
+            frmProductHistory historyForm = new frmProductHistory(productId);
+            historyForm.Show();
         }
     }
 }

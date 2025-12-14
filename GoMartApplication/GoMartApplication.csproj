@@ -121,16 +121,22 @@
     <Compile Include="SellingForm.Designer.cs">
       <DependentUpon>SellingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SQL_DB\frmCustomerHistory.cs">
+    <Compile Include="frmCustomerHistory.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SQL_DB\frmCustomerHistory.Designer.cs">
+    <Compile Include="frmCustomerHistory.Designer.cs">
       <DependentUpon>frmCustomerHistory.cs</DependentUpon>
     </Compile>
-    <Compile Include="SQL_DB\frmSellerHistory.cs">
+    <Compile Include="frmProductHistory.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SQL_DB\frmSellerHistory.Designer.cs">
+    <Compile Include="frmProductHistory.Designer.cs">
+      <DependentUpon>frmProductHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSellerHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSellerHistory.Designer.cs">
       <DependentUpon>frmSellerHistory.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="AboutBox1.resx">
@@ -170,10 +176,13 @@
     <EmbeddedResource Include="SellingForm.resx">
       <DependentUpon>SellingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SQL_DB\frmCustomerHistory.resx">
+    <EmbeddedResource Include="frmCustomerHistory.resx">
       <DependentUpon>frmCustomerHistory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SQL_DB\frmSellerHistory.resx">
+    <EmbeddedResource Include="frmProductHistory.resx">
+      <DependentUpon>frmProductHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSellerHistory.resx">
       <DependentUpon>frmSellerHistory.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
