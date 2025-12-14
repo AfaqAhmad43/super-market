@@ -31,6 +31,11 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAddNewSeller));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtPass = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtPhone = new System.Windows.Forms.TextBox();
+            this.txtAge = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.lblSellerID = new System.Windows.Forms.Label();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
@@ -38,12 +43,8 @@
             this.txtSellerName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtAge = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtPhone = new System.Windows.Forms.TextBox();
-            this.txtPass = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -51,6 +52,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.SandyBrown;
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.txtPass);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtPhone);
@@ -71,6 +73,45 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Add New Seller";
+            // 
+            // txtPass
+            // 
+            this.txtPass.Location = new System.Drawing.Point(397, 76);
+            this.txtPass.Name = "txtPass";
+            this.txtPass.Size = new System.Drawing.Size(192, 21);
+            this.txtPass.TabIndex = 15;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(305, 79);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 15);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Password";
+            // 
+            // txtPhone
+            // 
+            this.txtPhone.Location = new System.Drawing.Point(103, 76);
+            this.txtPhone.Name = "txtPhone";
+            this.txtPhone.Size = new System.Drawing.Size(192, 21);
+            this.txtPhone.TabIndex = 13;
+            // 
+            // txtAge
+            // 
+            this.txtAge.Location = new System.Drawing.Point(397, 41);
+            this.txtAge.Name = "txtAge";
+            this.txtAge.Size = new System.Drawing.Size(192, 21);
+            this.txtAge.TabIndex = 12;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(305, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(77, 15);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Seller Age:";
             // 
             // lblSellerID
             // 
@@ -149,45 +190,6 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Seller Name:";
             // 
-            // txtAge
-            // 
-            this.txtAge.Location = new System.Drawing.Point(397, 41);
-            this.txtAge.Name = "txtAge";
-            this.txtAge.Size = new System.Drawing.Size(192, 21);
-            this.txtAge.TabIndex = 12;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(305, 44);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(77, 15);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Seller Age:";
-            // 
-            // txtPhone
-            // 
-            this.txtPhone.Location = new System.Drawing.Point(103, 76);
-            this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(192, 21);
-            this.txtPhone.TabIndex = 13;
-            // 
-            // txtPass
-            // 
-            this.txtPass.Location = new System.Drawing.Point(397, 76);
-            this.txtPass.Name = "txtPass";
-            this.txtPass.Size = new System.Drawing.Size(192, 21);
-            this.txtPass.TabIndex = 15;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(305, 79);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 15);
-            this.label5.TabIndex = 14;
-            this.label5.Text = "Password";
-            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
@@ -213,6 +215,20 @@
             this.dataGridView1.Size = new System.Drawing.Size(670, 200);
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.Click += new System.EventHandler(this.dataGridView1_Click);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Red;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(530, 127);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(80, 28);
+            this.button1.TabIndex = 16;
+            this.button1.Text = "History";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // frmAddNewSeller
             // 
@@ -250,5 +266,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button button1;
     }
 }

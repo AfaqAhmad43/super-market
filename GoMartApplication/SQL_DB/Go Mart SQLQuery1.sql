@@ -1599,3 +1599,47 @@ begin
         getdate()
     from deleted;
 end;
+
+-- Seller history table
+create table tblSellerHistory
+(
+    historyID int identity(1,1) primary key,
+    sellerID int,
+    sellerName varchar(100),
+    sellerAge int,
+    sellerPhone varchar(20),
+    sellerPass varchar(50),
+    actionType varchar(10),  
+    actionDate datetime default getdate()
+)
+
+create trigger trg_seller_insert
+on tblSeller
+after insert
+as
+begin
+    insert into tblSellerHistory (sellerID, sellerName, sellerAge, sellerPhone, sellerPass, actionType)
+    select sellerID, sellerName, sellerAge, sellerPhone, sellerPass, 'INSERT'
+    from inserted
+end
+
+create trigger trg_seller_update
+on tblSeller
+after update
+as
+begin
+    insert into tblSellerHistory (sellerID, sellerName, sellerAge, sellerPhone, sellerPass, actionType)
+    select sellerID, sellerName, sellerAge, sellerPhone, sellerPass, 'UPDATE'
+    from inserted
+end
+
+create trigger trg_seller_delete
+on tblSeller
+after delete
+as
+begin
+    insert into tblSellerHistory (sellerID, sellerName, sellerAge, sellerPhone, sellerPass, actionType)
+    select sellerID, sellerName, sellerAge, sellerPhone, sellerPass, 'DELETE'
+    from deleted
+end
+

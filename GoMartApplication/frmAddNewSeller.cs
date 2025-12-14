@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoMartApplication.SQL_DB;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -227,6 +228,29 @@ namespace GoMartApplication
             txtAge.Text = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
             txtPhone.Text = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
             txtPass.Text = dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a seller first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+
+            int sellerID;
+            bool parsed = int.TryParse(dataGridView1.SelectedRows[0].Cells["SellerID"].Value.ToString(), out sellerID);
+
+            if (!parsed)
+            {
+                MessageBox.Show("Selected seller ID is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
+            frmSellerHistory historyForm = new frmSellerHistory(sellerID);
+            historyForm.ShowDialog();
         }
     }
 }
