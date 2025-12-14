@@ -1,13 +1,14 @@
-﻿using System;
+﻿using GoMartApplication.SQL_DB;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 using System.Xml.Linq;
 
 namespace GoMartApplication
@@ -244,6 +245,30 @@ namespace GoMartApplication
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a customer first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            
+            int customerId;
+            bool parsed = int.TryParse(dataGridView1.SelectedRows[0].Cells["CustomerID"].Value.ToString(), out customerId);
+
+            if (!parsed)
+            {
+                MessageBox.Show("Selected customer ID is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            
+            frmCustomerHistory historyForm = new frmCustomerHistory(customerId);
+            historyForm.ShowDialog();
         }
     }
 }

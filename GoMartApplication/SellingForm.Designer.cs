@@ -58,9 +58,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.dataGridView2_Product = new System.Windows.Forms.DataGridView();
-            this.txtBillNo = new System.Windows.Forms.TextBox();
             this.btnSaveBill = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
             this.cmdCustomer = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1_Order)).BeginInit();
@@ -388,16 +386,6 @@
             this.dataGridView2_Product.TabIndex = 8;
             this.dataGridView2_Product.Click += new System.EventHandler(this.dataGridView2_Product_Click);
             // 
-            // txtBillNo
-            // 
-            this.txtBillNo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.txtBillNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtBillNo.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtBillNo.Location = new System.Drawing.Point(684, 274);
-            this.txtBillNo.Name = "txtBillNo";
-            this.txtBillNo.Size = new System.Drawing.Size(101, 24);
-            this.txtBillNo.TabIndex = 9;
-            // 
             // btnSaveBill
             // 
             this.btnSaveBill.BackColor = System.Drawing.Color.Orange;
@@ -405,24 +393,13 @@
             this.btnSaveBill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSaveBill.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSaveBill.ForeColor = System.Drawing.Color.Black;
-            this.btnSaveBill.Location = new System.Drawing.Point(524, 236);
+            this.btnSaveBill.Location = new System.Drawing.Point(827, 234);
             this.btnSaveBill.Name = "btnSaveBill";
             this.btnSaveBill.Size = new System.Drawing.Size(75, 36);
             this.btnSaveBill.TabIndex = 10;
-            this.btnSaveBill.Text = "Add";
+            this.btnSaveBill.Text = "Add to Bill";
             this.btnSaveBill.UseVisualStyleBackColor = false;
             this.btnSaveBill.Click += new System.EventHandler(this.btnAddBill_Details_Click);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.Color.Blue;
-            this.label9.Location = new System.Drawing.Point(580, 278);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(95, 17);
-            this.label9.TabIndex = 1;
-            this.label9.Text = "Bill_Number";
             // 
             // cmdCustomer
             // 
@@ -441,7 +418,6 @@
             this.ClientSize = new System.Drawing.Size(914, 521);
             this.Controls.Add(this.cmdCustomer);
             this.Controls.Add(this.btnSaveBill);
-            this.Controls.Add(this.txtBillNo);
             this.Controls.Add(this.dataGridView2_Product);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label7);
@@ -460,7 +436,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lblGrandTot);
-            this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -509,9 +484,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Price;
         private System.Windows.Forms.DataGridViewTextBoxColumn Quantity;
         private System.Windows.Forms.DataGridViewTextBoxColumn Total;
-        private System.Windows.Forms.TextBox txtBillNo;
         private System.Windows.Forms.Button btnSaveBill;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox cmdCustomer;
     }
 }

@@ -174,6 +174,7 @@ namespace GoMartApplication
                 da.Fill(dt);
                 dataGridView1.DataSource = dt;
             }
-        }
+        }       
+
     }
 }
